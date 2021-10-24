@@ -36,82 +36,83 @@ Node::~Node() {
 
 
 std::pair<bool, bool> Node::del(int key) {
-    std::shared_ptr<Node> p = this->shared_from_this();
+    auto p = this->shared_from_this();
     while (p->next != nullptr && p->key < key) {
-	p = p->next;
+        p = p->next;
     }
 
     bool deleted = false;
     if (p->down != nullptr) {
-	auto ret = p->down->del(key);
-	deleted = ret.first;
-	if (!ret.second) {
-	    return std::make_pair(ret.first, false);
-	}
+        auto ret = p->down->del(key);
+        deleted = ret.first;
+        if (!ret.second) {
+            return std::make_pair(ret.first, false);
+        }
 
-	// ret.second == true
-	if (p->next != nullptr && p->next->key == key) {
-	    auto next = p->next;
-	    p->next = next->next;
-	    return std::make_pair(true, true);
-	}
+        // ret.second == true
+        if (p->next != nullptr && p->next->key == key) {
+            auto next = p->next;
+            p->next = next->next;
+            return std::make_pair(true, true);
+        }
 
-	return std::make_pair(true, false);
+        return std::make_pair(true, false);
     } else { // p->down == nullptr
-	if (p->next != nullptr && p->next->key == key) {
-	    auto next = p->next;
-	    p->next = next->next;
-	    return std::make_pair(true, true);
-	}
+        if (p->next != nullptr && p->next->key == key) {
+            auto next = p->next;
+            p->next = next->next;
+            return std::make_pair(true, true);
+        }
 
-	return std::make_pair(false, false);
+        return std::make_pair(false, false);
     }
 }
 
 // assume this->key < key
 bool Node::search(int key) {
-    std::shared_ptr<Node> p = this->shared_from_this();
+    // std::shared_ptr<Node> p = this->shared_from_this();
+    auto p = this->shared_from_this();
     while (p->next != nullptr && p->key < key) {
-	p = p->next;
+        p = p->next;
     }
 
     if (p->down != nullptr) {
-	return p->down->search(key);
+        return p->down->search(key);
     }
 
     if (p->next == nullptr) {
-	return false;
+        return false;
     }
 
     return p->next->key == key;
 }
 
 std::pair<std::shared_ptr<Node>, bool> Node::insert(int key) {
-    std::shared_ptr<Node> p = shared_from_this();
+    auto p = shared_from_this();
 
     while (p->next != nullptr && p->key < key) {
-	p = p->next;
+        p = p->next;
     }
 
     if (p->down != nullptr) {
-	auto o = p->down->insert(key);
-	if (!o.second || !flip()) {
-	    return std::pair<std::shared_ptr<Node>, bool>(o.first, false);
-	}
-
-	auto up = std::shared_ptr<Node>(new Node(key));
-	up->down = o.first;
-	up->next = p;
-	p->next = up;
-	return std::pair<std::shared_ptr<Node>, bool>(up, true);
+        auto o = p->down->insert(key);
+        if (!o.second || !flip()) {
+            return std::pair<std::shared_ptr<Node>, bool>(o.first, false);
+        }
+        
+        auto up = std::shared_ptr<Node>(new Node(key));
+        up->down = o.first;
+        up->next = p;
+        p->next = up;
+        return std::pair<std::shared_ptr<Node>, bool>(up, true);
     } else {
-	std::cout<<"insert " << key << " after: " << p->key << std::endl;
-	auto o = std::shared_ptr<Node>(new Node(key));
-	o->down = nullptr;
-	o->next = p->next;
-	p->next = o;
-
-	return std::pair<std::shared_ptr<Node>, bool>(o, true);
+        std::cout<<"insert " << key << " after: " << p->key << std::endl;
+        auto o = std::shared_ptr<Node>(new Node(key));
+        o->down = nullptr;
+        o->next = p->next;
+        p->next = o;
+        
+        return std::pair<std::shared_ptr<Node>, bool>(o, true);
     }
 }
 
@@ -142,7 +143,7 @@ void Skiplist::Insert(int key) {
     auto o = this->head->insert(key);
     // TODO create new layer if necessary
     if (!o.second || !flip()) {
-	return;
+        return;
     }
 
     auto h = std::shared_ptr<Node>(new Node(INT_MIN));
@@ -164,14 +165,14 @@ bool Skiplist::Del(int key) {
 void Skiplist::Display() {
     auto p = this->head;
     while (p->down != nullptr) {
-	p = p->down;
+        p = p->down;
     }
 
     std::cout << "the list: ";
     p = p->next;
     while (p != nullptr) {
-	std::cout << p->key << ", ";
-	p = p->next;
+        std::cout << p->key << ", ";
+        p = p->next;
     }
     std::cout << std::endl;
 }
