@@ -1,1 +1,0 @@
-g++ hello.cpp -std=c++14 -L./lib64  -L./lib -I./include  -lfolly -lpthread -levent -levent_core -lglog -ldouble-conversion -lfmt -lssl -lcrypto -ldl -lgflags -lboost_context -lunwind  -o hello
